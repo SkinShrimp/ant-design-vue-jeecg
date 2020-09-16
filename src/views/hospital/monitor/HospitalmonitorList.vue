@@ -36,8 +36,81 @@
   </div>
 </template>
 
+<!-- 详情框模板 路径:      详情-->
+<template>
+  <div>
+    <a-modal
+      title="详细情况"
+      width="1100px"
+      :ok-button-props="{ props: { disabled: true } }"
+      :cancel-button-props="{ props: { disabled: true } }"
+      @ok="handleOk"
+    >
+          <a-form-item
+            :labelCol="labelCol"
+            :wrapperCol="wrapperCol"
+            label="部门角色名称">
+            <a-input placeholder="请输入部门角色名称" v-decorator="" />
+          </a-form-item>
 
-<!-- 审核框模板 路径:      审核->审核->审核-->
+    </a-modal>
+
+  </div>
+</template>
+
+<!-- 批量抽查模板 路径: 批量抽查 -->
+<template>
+  <div id="">
+    <a-modal
+      title="批量抽查"
+      style="top: 20px;text-align:center"
+      width="400px"
+      :visible="spotCheckModalVisible"
+      @ok="() => startSpotCheck(this)"
+      @cancel="() => setSpotCheckModalVisible(false)"
+    >
+      <a-form-model id="spotCheckForm"  :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="抽查方式" >
+          <a-radio-group id= "checkStatus" v-model="spotCheckForm.checkStatus" name="checkStatus" default-value="1">
+            <a-radio value="1" @click="hiddenDateFlag()">马上抽查</a-radio>
+            <a-radio value="0" @click="showDateFlag()">定时抽查</a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <a-form-model-item label="抽查时间间隔">
+          <a-select id="dateInterval" v-model="spotCheckForm.dateInterval" name="dateInterval" placeholder="请选择抽查时间间隔">
+            <a-select-option value="30">
+              30分钟
+            </a-select-option>
+            <a-select-option value="40">
+              40分钟
+            </a-select-option>
+            <a-select-option value="50">
+              50分钟
+            </a-select-option>
+            <a-select-option value="60">
+              60分钟
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-dropdown v-if="dateFlag">
+          <a-form-item label="抽查开始时间" >
+            <a-date-picker
+              show-time
+              type="date"
+              placeholder="请选择抽查日期"
+              style="width: 100%;"
+              v-model="spotCheckForm.dateStart"
+            />
+          </a-form-item>
+        </a-dropdown>
+      </a-form-model>
+
+
+    </a-modal>
+  </div>
+</template>
+
+        <!-- 审核框模板 路径:      审核->审核->审核-->
 <template>
   <div id="components-modal-demo-position">
     <a-modal
@@ -50,14 +123,14 @@
     >
 
 <template>
-  <a-card :bordered="false" style="height:100%;padding-bottom:200px; ">
+  <a-card :bordered="false" style=" ">
 
     <div class="table-page-search-wrapper">
       <a-form layout="inline" :form="form">
         <a-row :gutter="24">
           <a-col :span="20">
             <a-form-item label="上传状态">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择审核状态">
+              <a-select v-model="queryParam.outstatus" placeholder="请选择上传状态">
                 <a-select-option value="1">人工正常</a-select-option>
                 <a-select-option value="2">未上传</a-select-option>
               </a-select>
@@ -68,9 +141,9 @@
         <a-row :gutter="24">
           <a-col :span="20">
             <a-form-item label="人脸识别">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择审核状态">
-                <a-select-option value="1">人工正常</a-select-option>
-                <a-select-option value="2">未上传</a-select-option>
+              <a-select v-model="queryParam.outstatus" placeholder="请选择人脸识别">
+                <a-select-option value="1">人工通过</a-select-option>
+                <a-select-option value="2">未通过</a-select-option>
               </a-select>
            </a-form-item>
           </a-col>
@@ -78,11 +151,19 @@
 
         <a-row :gutter="24">
           <a-col :span="20">
-            <a-form-item label="人脸识别">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择审核状态">
+            <a-form-item label="定位状态">
+              <a-select v-model="queryParam.outstatus" placeholder="请选择定位状态">
                 <a-select-option value="1">人工正常</a-select-option>
-                <a-select-option value="2">未上传</a-select-option>
+                <a-select-option value="2">偏离</a-select-option>
               </a-select>
+           </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="20">
+            <a-form-item label="备注">
+                <a-input placeholder="" v-model="queryParam.percode"></a-input>
            </a-form-item>
           </a-col>
         </a-row>
@@ -196,17 +277,9 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('医院患者服务表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys)">批量抽查</a-button>
+
     </div>
 
     <!-- table区域-begin -->
@@ -226,7 +299,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="rowSelection"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -253,7 +326,7 @@
         <span slot="action" slot-scope="text, record">
         <a @click="showModal(record)">审核</a>
                     <a-divider type="vertical" />
-          <a @click="handleEdit(record)">详情</a>
+          <a @click="showModal(record)">详情</a>
 <!--handleDelete
           <a-divider type="vertical" />
           <a-dropdown>
@@ -296,7 +369,15 @@
     },
     data () {
       return {
-        //模态框
+        dateFlag: false,
+        labelCol: { span: 8 },
+        wrapperCol: { span: 14 },
+        //批量操作记录选中id
+        selectIds:[],
+        //批量抽查模态框是否显示
+        spotCheckModalVisible: false,
+
+        //审核模态框
         visible: false,
         //审核列表
         auditList: [
@@ -581,10 +662,11 @@
           showSizeChanger: true,
           total: 0
         },
-
-
         //审核->审核->审核
         modal1Visible: false,
+
+        spotCheckForm: {
+        },
       }
     },
     created() {
@@ -653,12 +735,83 @@
         console.log(e);
         this.visible = false;
       },
-
       //审核->审核->审核
       setModal1Visible(modal1Visible) {
         this.modal1Visible = modal1Visible;
       },
-    }
+      //批量抽查模态框
+      setSpotCheckModalVisible(spotCheckModalVisible) {
+        this.spotCheckModalVisible = spotCheckModalVisible;
+      },
+      error(message) {
+        this.$message.error(message);
+      },
+      success(message) {
+        this.$message.success(message);
+      },
+      warning(message) {
+        this.$message.warning(message);
+      },
+      //批量抽查
+      startSpotCheck(){
+        if(this.columns.type!="1"){
+          alertMsg.info('患者已出院,不可以抽查!');
+        }else{
+          if(status!="0" && status!="1"){
+            alertMsg.info('抽查状态不正确!');
+          }else{
+            if(id=="undefined"||!id){
+              alertMsg.info('请选择抽查记录!');
+            }else{
+              alertMsg.confirm("您确定抽查当前患者吗?", {
+                okCall:function(){
+                  var extractStatus="";
+                  if(status=="0") {extractStatus="1";}else{extractStatus="0";}
+                  $.ajax({type:'POST', url:"../Monitor/monitorAction_setExtract.action", data:{id:id,extractstatus:extractStatus}, dataType:"json", cache:false, success:navTabAjaxDone, error:DWZ.ajaxError});
+                }
+              });
+            }
+          }
+
+        }
+        console.log("测hi是测试"+this.spotCheckForm.checkStatus);
+
+        console.log("测hi是测试"+this.spotCheckForm.dateInterval);
+        console.log("测hi是测试"+this.spotCheckForm.dateStart);
+
+      },
+      handleSpotCheck(id) {
+        this.selectIds =id;
+        if(this.selectIds==''){
+          this.warning("请先选择一条抽查的数据!");
+        }else{
+          this.spotCheckModalVisible=true;
+        }
+      },
+      showDateFlag(){
+        this.dateFlag=true;
+      },
+      hiddenDateFlag(){
+        this.dateFlag=false;
+      },
+    },
+    // 按照条件置灰勾选框
+    computed: {
+      rowSelection() {
+        return {
+          onChange: (selectedRowKeys, selectedRows) => {
+            this.selectedRowKeys = selectedRowKeys;
+            this.selectionRows = selectionRows;
+          },
+          getCheckboxProps: record => ({
+            props: {
+              disabled: record.status !== '1' && (record.status!=='0' && record.status!=='1'), // Column configuration not to be checked
+            },
+          }),
+        };
+      },
+    },
+
   }
 </script>
 <style scoped>
