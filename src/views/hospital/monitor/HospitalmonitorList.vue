@@ -69,7 +69,7 @@
       @ok="() => startSpotCheck(this)"
       @cancel="() => setSpotCheckModalVisible(false)"
     >
-      <a-form-model id="spotCheckForm"  :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-model id="spotCheckForm"  @submit="handleSubmit"   :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="抽查方式" >
           <a-radio-group id= "checkStatus" v-model="spotCheckForm.checkStatus" name="checkStatus" default-value="1">
             <a-radio value="1" @click="hiddenDateFlag()">马上抽查</a-radio>
@@ -77,18 +77,31 @@
           </a-radio-group>
         </a-form-item>
         <a-form-model-item label="抽查时间间隔">
-          <a-select id="dateInterval" v-model="spotCheckForm.dateInterval" name="dateInterval" placeholder="请选择抽查时间间隔">
-            <a-select-option value="30">
+<!--          <a-select-->
+<!--            placeholder="Select a person"-->
+<!--            v-decorator="[-->
+<!--              {rules: [{ required: true, message: '请选择执行人'}]}-->
+<!--            ]"-->
+<!--          >-->
+<!--            <a-select-option value="jack">-->
+<!--              Jack-->
+<!--            </a-select-option>-->
+<!--            <a-select-option value="lucy">-->
+<!--              Lucy-->
+<!--            </a-select-option>-->
+<!--            <a-select-option value="tom">-->
+<!--              Tom-->
+<!--            </a-select-option>-->
+<!--          </a-select>-->
+          <a-select id="dateInterval" v-model="spotCheckForm.dateInterval" name="dateInterval" placeholder="请选择抽查时间间隔"  v-decorator="[ 'name', {rules: [{ required: true, message: '时间间隔不许为空!' }] }]">
+            <a-select-option value="3">
+              10分钟
+            </a-select-option>
+            <a-select-option value="4">
+              20分钟
+            </a-select-option>
+            <a-select-option value="5">
               30分钟
-            </a-select-option>
-            <a-select-option value="40">
-              40分钟
-            </a-select-option>
-            <a-select-option value="50">
-              50分钟
-            </a-select-option>
-            <a-select-option value="60">
-              60分钟
             </a-select-option>
           </a-select>
         </a-form-model-item>
@@ -96,7 +109,7 @@
           <a-form-item label="抽查开始时间" >
             <a-date-picker
               show-time
-              type="date"
+              format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择抽查日期"
               style="width: 100%;"
               v-model="spotCheckForm.dateStart"
@@ -278,7 +291,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="download" @click="handleExportXls('医院患者服务表')">导出</a-button>
-      <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys)">批量抽查</a-button>
+      <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys,selectionRows)">批量抽查</a-button>
 
     </div>
 
@@ -360,6 +373,8 @@
   import HospitalmonitorModal from './modules/HospitalmonitorModal'
   import { axios } from '@/utils/request'
   import { filterObj } from '@/utils/util';
+  import moment from "moment";
+  import pick from "lodash.pick";
 
   export default {
     name: 'HospitalmonitorList',
@@ -374,6 +389,7 @@
         wrapperCol: { span: 14 },
         //批量操作记录选中id
         selectIds:[],
+        selectObject:[],
         //批量抽查模态框是否显示
         spotCheckModalVisible: false,
 
@@ -530,6 +546,10 @@
         description: '医院患者服务表管理页面',
         // 表头
         columns: [
+          {            dataIndex: 'type'
+          },
+          {            dataIndex: 'status'
+          },
           {
             title: '序号',
             dataIndex: '',
@@ -754,37 +774,35 @@
       },
       //批量抽查
       startSpotCheck(){
-        if(this.columns.type!="1"){
-          alertMsg.info('患者已出院,不可以抽查!');
-        }else{
-          if(status!="0" && status!="1"){
-            alertMsg.info('抽查状态不正确!');
-          }else{
-            if(id=="undefined"||!id){
-              alertMsg.info('请选择抽查记录!');
-            }else{
-              alertMsg.confirm("您确定抽查当前患者吗?", {
-                okCall:function(){
-                  var extractStatus="";
-                  if(status=="0") {extractStatus="1";}else{extractStatus="0";}
-                  $.ajax({type:'POST', url:"../Monitor/monitorAction_setExtract.action", data:{id:id,extractstatus:extractStatus}, dataType:"json", cache:false, success:navTabAjaxDone, error:DWZ.ajaxError});
-                }
-              });
-            }
-          }
 
-        }
-        console.log("测hi是测试"+this.spotCheckForm.checkStatus);
+        let data = {"hospitalmonitors":this.selectObject,"hmIds":this.selectIds,"checkStatus":this.spotCheckForm.checkStatus,"dateInterval":this.spotCheckForm.dateInterval,"dateStart":this.spotCheckForm.dateStart.format('YYYY-MM-DD HH:mm:ss')};
+        console.log("测hi是测试ssssssssssssssssssssssssssssssssssssthis.columns.status"+this.selectionRows);
+        this.axios.post("/hospital/spotCheckTask/check",data).then(res=>{
+          console.log(res);
+        })
 
-        console.log("测hi是测试"+this.spotCheckForm.dateInterval);
-        console.log("测hi是测试"+this.spotCheckForm.dateStart);
+        this.spotCheckModalVisible = false;
 
       },
-      handleSpotCheck(id) {
+      //抽查校验
+      handleSubmit (e) {
+        e.preventDefault()
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            this.$notification['error']({
+              message: 'Received values of form:',
+              description: values
+            })
+          }
+        })
+      },
+
+      handleSpotCheck(id,selectObject) {
         this.selectIds =id;
         if(this.selectIds==''){
           this.warning("请先选择一条抽查的数据!");
         }else{
+          this.selectObject = selectObject;
           this.spotCheckModalVisible=true;
         }
       },
@@ -801,11 +819,13 @@
         return {
           onChange: (selectedRowKeys, selectedRows) => {
             this.selectedRowKeys = selectedRowKeys;
-            this.selectionRows = selectionRows;
+            this.selectionRows = selectedRows;
+
           },
           getCheckboxProps: record => ({
             props: {
-              disabled: record.status !== '1' && (record.status!=='0' && record.status!=='1'), // Column configuration not to be checked
+              //01:住院登记 02:行为认证 03:出院 04:抽查
+              disabled: record.status=='1' && record.type == '01', // Column configuration not to be checked
             },
           }),
         };
