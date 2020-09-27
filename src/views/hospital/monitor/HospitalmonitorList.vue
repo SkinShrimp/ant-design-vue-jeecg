@@ -546,10 +546,6 @@
         description: '医院患者服务表管理页面',
         // 表头
         columns: [
-          {            dataIndex: 'type'
-          },
-          {            dataIndex: 'status'
-          },
           {
             title: '序号',
             dataIndex: '',
