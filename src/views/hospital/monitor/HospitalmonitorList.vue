@@ -771,7 +771,7 @@
       //批量抽查
       startSpotCheck(){
 
-        let data = {"hospitalmonitors":this.selectObject,"hmIds":this.selectIds,"checkStatus":this.spotCheckForm.checkStatus,"dateInterval":this.spotCheckForm.dateInterval,"dateStart":this.spotCheckForm.dateStart.format('YYYY-MM-DD HH:mm:ss')};
+        let data = {"hospitalmonitors":this.selectObject,"hmIds":this.selectIds,"checkStatus":this.spotCheckForm.checkStatus,"dateInterval":this.spotCheckForm.dateInterval,"dateStart":moment(this.spotCheckForm.dateStart).format('YYYY-MM-DD HH:mm:ss')};
         console.log("测hi是测试ssssssssssssssssssssssssssssssssssssthis.columns.status"+this.selectionRows);
         this.axios.post("/hospital/spotCheckTask/check",data).then(res=>{
           console.log(res);
