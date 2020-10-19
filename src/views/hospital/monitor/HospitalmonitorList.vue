@@ -10,6 +10,8 @@
       :ok-button-props="{ props: { disabled: true } }"
       :cancel-button-props="{ props: { disabled: true } }"
       @ok="handleOk"
+      @cancel="() => reloadPagination()"
+
     >
     <a-table
             ref="table"
@@ -22,13 +24,14 @@
             :dataSource="dataSources"
             :pagination="ipaginations"
             :loading="loading"
+            :rowSelection="rowSelection"
             class="j-table-force-nowrap"
-            @change="">
-
-            <span slot="action" slot-scope="text, record">
-            <a @click="setModal1Visible(true)">审核</a>
+            @change="handleTableChange"
+                  >
+            <span slot="action" slot-scope="text, recordid">
+            <a @click="setModal1Visible(recordid)">审核</a>
                         <a-divider type="vertical" />
-            <a @click="showModal(record)">详情</a>
+            <a @click="showDetail(true)">详情</a>
 
             </span>
       </a-table>
@@ -42,16 +45,143 @@
     <a-modal
       title="详细情况"
       width="1100px"
+      :visible="detail"
       :ok-button-props="{ props: { disabled: true } }"
       :cancel-button-props="{ props: { disabled: true } }"
       @ok="handleOk"
+      @cancel="showDetail(false)"
     >
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="部门角色名称">
-            <a-input placeholder="请输入部门角色名称" v-decorator="" />
-          </a-form-item>
+      <template>
+        <div style="width: 1100px; height: 500px" >
+        <div style="float:left;width: 850px;">
+          <a-row  >
+            <a-col :span="5">
+              <p class="height-100">
+                姓名: &nbsp;&nbsp;{{details.name}}
+              </p>
+            </a-col>
+            <a-col :span="4">
+              <p class="height-50">
+                性别: &nbsp;&nbsp;{{details.sexName}}
+              </p>
+            </a-col>
+            <a-col :span="7">
+              <p class="height-120">
+                身份证号: &nbsp;&nbsp;{{details.percode}}
+              </p>
+            </a-col>
+            <a-col :span="4">
+              <p class="height-80">
+                联系电话: &nbsp;&nbsp;{{details.phone}}
+              </p>
+            </a-col>
+          </a-row>
+          <a-row >
+            <a-col :span="5">
+              <p class="height-80">
+                社保编号: &nbsp;&nbsp;{{details.inscode}}
+              </p>
+            </a-col>
+              <a-col :span="5">
+                <p class="height-80">
+                  入院编号: &nbsp;&nbsp;{{details.incode}}
+                </p>
+              </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                医院名称: &nbsp;&nbsp;{{details.hisName}}
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                入院日期: &nbsp;&nbsp;{{details.indate}}
+              </p>
+            </a-col>
+            </a-row>
+          <a-row >
+            <a-col :span="5">
+              <p class="height-80">
+                科室: &nbsp;&nbsp;{{details.deptName}}
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                诊断: &nbsp;&nbsp;{{details.diagnose}}
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                病房编号: &nbsp;&nbsp;{{details.wardcode}}
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                出院日期: &nbsp;&nbsp;{{details.outdate}}
+              </p>
+            </a-col>
+          </a-row>
+          <a-row >
+            <a-col :span="5">
+              <p class="height-80">
+                费用编号: &nbsp;&nbsp;{{details.moneycode}}
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                费用金额: &nbsp;&nbsp;{{details.money}}
+              </p>
+            </a-col>
+          </a-row>
+          <a-row >
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image1" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image2" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image3" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image4" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+          </a-row>
+          <a-row >
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image5" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image6" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image7" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+            <a-col :span="5">
+              <p class="height-80">
+                <img :src="details.image8" style="width: 100px; height: 150px " />
+              </p>
+            </a-col>
+          </a-row>
+        </div>
+          <div style="float:left; width: 100px; height: 250px;">
+            <img :src="details.image" style="width: 100px; height: 150px " />
+          </div>
+        </div>
+      </template>
 
     </a-modal>
 
@@ -69,56 +199,26 @@
       @ok="() => startSpotCheck(this)"
       @cancel="() => setSpotCheckModalVisible(false)"
     >
-      <a-form-model id="spotCheckForm"  @submit="handleSubmit"   :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="抽查方式" >
-          <a-radio-group id= "checkStatus" v-model="spotCheckForm.checkStatus" name="checkStatus" default-value="1">
-            <a-radio value="1" @click="hiddenDateFlag()">马上抽查</a-radio>
-            <a-radio value="0" @click="showDateFlag()">定时抽查</a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-model-item label="抽查时间间隔">
-<!--          <a-select-->
-<!--            placeholder="Select a person"-->
-<!--            v-decorator="[-->
-<!--              {rules: [{ required: true, message: '请选择执行人'}]}-->
-<!--            ]"-->
-<!--          >-->
-<!--            <a-select-option value="jack">-->
-<!--              Jack-->
-<!--            </a-select-option>-->
-<!--            <a-select-option value="lucy">-->
-<!--              Lucy-->
-<!--            </a-select-option>-->
-<!--            <a-select-option value="tom">-->
-<!--              Tom-->
-<!--            </a-select-option>-->
-<!--          </a-select>-->
-          <a-select id="dateInterval" v-model="spotCheckForm.dateInterval" name="dateInterval" placeholder="请选择抽查时间间隔"  v-decorator="[ 'name', {rules: [{ required: true, message: '时间间隔不许为空!' }] }]">
-            <a-select-option value="3">
-              10分钟
-            </a-select-option>
-            <a-select-option value="4">
-              20分钟
-            </a-select-option>
-            <a-select-option value="5">
-              30分钟
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
+          <div style="width: 100%;margin-left: -2%;margin-top: 20px">抽查方式&nbsp;:&nbsp;&nbsp;
+            <a-radio-group v-model="spotCheckForm.checkStatus" :default-value="1">
+              <a-radio :value="1" @click="hiddenDateFlag()" >马上抽查</a-radio>
+              <a-radio :value="0" @click="showDateFlag()">定时抽查</a-radio>
+            </a-radio-group>
+          </div>
+      <div style="width: 100%;margin-left: -4%;margin-top: 20px"><font color="red">*</font>&nbsp;抽查时间间隔&nbsp;:&nbsp;&nbsp;
+        <j-dict-select-tag v-model="spotCheckForm.dateInterval" style="width: 150px" placeholder="请选择职级" dictCode="spot_check_time"/>
+      </div>
         <a-dropdown v-if="dateFlag">
-          <a-form-item label="抽查开始时间" >
+          <div style="width: 100%;margin-left: 2%;margin-top: 20px"><font color="red">*</font>&nbsp;抽查开始时间&nbsp;:&nbsp;&nbsp;
             <a-date-picker
               show-time
               format="YYYY-MM-DD HH:mm:ss"
               placeholder="请选择抽查日期"
-              style="width: 100%;"
+              style="width: 150px;"
               v-model="spotCheckForm.dateStart"
             />
-          </a-form-item>
+          </div>
         </a-dropdown>
-      </a-form-model>
-
-
     </a-modal>
   </div>
 </template>
@@ -131,61 +231,33 @@
       style="top: 20px;text-align:center"
       width="400px"
       :visible="modal1Visible"
-      @ok="() => setModal1Visible(false)"
-      @cancel="() => setModal1Visible(false)"
+      @ok="() => review()"
+      @cancel="() => setModal1Visible('-1')"
     >
 
-<template>
-  <a-card :bordered="false" style=" ">
-
-    <div class="table-page-search-wrapper">
-      <a-form layout="inline" :form="form">
-        <a-row :gutter="24">
-          <a-col :span="20">
-            <a-form-item label="上传状态">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择上传状态">
-                <a-select-option value="1">人工正常</a-select-option>
-                <a-select-option value="2">未上传</a-select-option>
+        <div style="width: 100%;margin-left: -2%;margin-top: 20px">上传状态&nbsp;:&nbsp;&nbsp;
+              <a-select style="width: 150px" v-model="column.hospstatus" placeholder="请选择上传状态">
+                <a-select-option value="8">人工正常</a-select-option>
+                <a-select-option value="9">未上传</a-select-option>
               </a-select>
-           </a-form-item>
-          </a-col>
-        </a-row>
-
-        <a-row :gutter="24">
-          <a-col :span="20">
-            <a-form-item label="人脸识别">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择人脸识别">
-                <a-select-option value="1">人工通过</a-select-option>
-                <a-select-option value="2">未通过</a-select-option>
+        </div>
+      <div style="width: 100%;margin-left: -2%;margin-top: 20px">人脸识别&nbsp;:&nbsp;&nbsp;
+              <a-select style="width: 150px" v-model="column.monitorstatus" placeholder="请选择人脸识别">
+                <a-select-option value="8">人工通过</a-select-option>
+                <a-select-option value="9">未通过</a-select-option>
               </a-select>
-           </a-form-item>
-          </a-col>
-        </a-row>
+      </div>
 
-        <a-row :gutter="24">
-          <a-col :span="20">
-            <a-form-item label="定位状态">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择定位状态">
-                <a-select-option value="1">人工正常</a-select-option>
-                <a-select-option value="2">偏离</a-select-option>
+      <div style="width: 100%;margin-left: -2%;margin-top: 20px">定位状态&nbsp;:&nbsp;&nbsp;
+              <a-select style="width: 150px" v-model="column.gpscheckstatus" placeholder="请选择定位状态">
+                <a-select-option value="8">人工正常</a-select-option>
+                <a-select-option value="9">偏离</a-select-option>
               </a-select>
-           </a-form-item>
-          </a-col>
-        </a-row>
+      </div>
 
-        <a-row :gutter="24">
-          <a-col :span="20">
-            <a-form-item label="备注">
-                <a-input placeholder="" v-model="queryParam.percode"></a-input>
-           </a-form-item>
-          </a-col>
-        </a-row>
-
-      </a-form>
-    </div>
-
-  </a-card>
-</template>
+      <div style="width: 100%;margin-left: -2%;margin-top: 20px">备注&nbsp;:&nbsp;&nbsp;
+                <a-input style="width: 150px" placeholder="" v-model="column.remark"></a-input>
+      </div>
 
     </a-modal>
   </div>
@@ -208,80 +280,81 @@
             </a-form-item>
           </a-col>
 
-          <a-col :md="6" :sm="8">
-            <a-form-item label="住院类型">
-              <a-select v-model="queryParam.outstatus" placeholder="请选择住院类型">
-                <a-select-option value="1">在院</a-select-option>
-                <a-select-option value="2">出院</a-select-option>
-                <a-select-option value="4">抽查</a-select-option>
-              </a-select>
+          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-form-item label="住院时间">
+              <a-range-picker v-model="queryParam.indate"
+                              format="YYYY-MM-DD"
+                              :placeholder="['开始时间', '结束时间']"
+                              @change="onInDateChange" />
             </a-form-item>
           </a-col>
 
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="住院编号">
-                <a-input placeholder="请输入住院编号名字" v-model="queryParam.incode"></a-input>
-              </a-form-item>
-            </a-col>
-
-           <a-col :xl="6" :lg="7" :md="8" :sm="24">
-                        <a-form-item label="住院时间">
-                          <a-range-picker v-model="queryParam.indate"
-                                          format="YYYY-MM-DD"
-                                          :placeholder="['开始时间', '结束时间']"
-                                          @change="onInDateChange" />
-                        </a-form-item>
-            </a-col>
-
-            <a-col :md="6" :sm="8">
-              <a-form-item label="医院名称">
-                <a-input placeholder="请输入医院名称查询" v-model="queryParam.hisname"></a-input>
-              </a-form-item>
-            </a-col>
-
-            <a-col :md="6" :sm="8">
-              <a-form-item label="就诊科室">
-                <a-select placeholder="请选择就诊科室" v-model="queryParam.dept">
-                  <a-select-option v-for="dept in dictOptions" :key="dept.id" :value="dept.id">
-                    {{ dept.name }}
-                  </a-select-option>
-                </a-select>
-
-              </a-form-item>
-            </a-col>
-
-
-
-
-            <a-col :md="6" :sm="8">
-              <a-form-item label="住院诊断">
-                <a-input placeholder="请输入住院诊断查询" v-model="queryParam.diagnose"></a-input>
-              </a-form-item>
-            </a-col>
-
-             <a-col :xl="6" :lg="7" :md="8" :sm="24">
-                          <a-form-item label="出院时间">
-                            <a-range-picker v-model="queryParam.outdate"
-                                            format="YYYY-MM-DD"
-                                            :placeholder="['开始时间', '结束时间']"
-                                            @change="onOutDateChange" />
-                          </a-form-item>
-
-              </a-col>
-
-          </template>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="医院名称">
+              <a-input placeholder="请输入医院名称查询" v-model="queryParam.hisname"></a-input>
+            </a-form-item>
+          </a-col>
 
           <a-col :md="6" :sm="8">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
+            <a-form-item label="就诊科室">
+              <a-select placeholder="请选择就诊科室" v-model="queryParam.dept">
+                <a-select-option v-for="dept in dictOptions" :key="dept.id" :value="dept.id">
+                  {{ dept.name }}
+                </a-select-option>
+              </a-select>
+
+            </a-form-item>
           </a-col>
+
+          <!--          <a-col :md="6" :sm="8">-->
+<!--            <a-form-item label="住院类型">-->
+<!--              <a-select v-model="queryParam.outstatus" placeholder="请选择住院类型">-->
+<!--                <a-select-option value="1">在院</a-select-option>-->
+<!--                <a-select-option value="2">出院</a-select-option>-->
+<!--                <a-select-option value="4">抽查</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+
+<!--          <template v-if="toggleSearchStatus">-->
+<!--            <a-col :md="6" :sm="8">-->
+<!--              <a-form-item label="住院编号">-->
+<!--                <a-input placeholder="请输入住院编号名字" v-model="queryParam.incode"></a-input>-->
+<!--              </a-form-item>-->
+<!--            </a-col>-->
+
+
+
+
+
+<!--            <a-col :md="6" :sm="8">-->
+<!--              <a-form-item label="住院诊断">-->
+<!--                <a-input placeholder="请输入住院诊断查询" v-model="queryParam.diagnose"></a-input>-->
+<!--              </a-form-item>-->
+<!--            </a-col>-->
+
+<!--             <a-col :xl="6" :lg="7" :md="8" :sm="24">-->
+<!--                          <a-form-item label="出院时间">-->
+<!--                            <a-range-picker v-model="queryParam.outdate"-->
+<!--                                            format="YYYY-MM-DD"-->
+<!--                                            :placeholder="['开始时间', '结束时间']"-->
+<!--                                            @change="onOutDateChange" />-->
+<!--                          </a-form-item>-->
+
+<!--              </a-col>-->
+
+<!--          </template>-->
+
+<!--          <a-col :md="6" :sm="8">-->
+<!--            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">-->
+<!--              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>-->
+<!--              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
+<!--              <a @click="handleToggleSearch" style="margin-left: 8px">-->
+<!--                {{ toggleSearchStatus ? '收起' : '展开' }}-->
+<!--                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+<!--              </a>-->
+<!--            </span>-->
+<!--          </a-col>-->
 
         </a-row>
       </a-form>
@@ -290,7 +363,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('医院患者服务表')">导出</a-button>
+<!--      <a-button type="primary" icon="download" @click="handleExportXls('医院患者服务表')">导出</a-button>-->
       <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys,selectionRows)">批量抽查</a-button>
 
     </div>
@@ -336,27 +409,11 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
-        <a @click="showModal(record)">审核</a>
-                    <a-divider type="vertical" />
-          <a @click="showModal(record)">详情</a>
-<!--handleDelete
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-          -->
-        </span>
+<!--        <span slot="action" slot-scope="text, record">-->
+<!--        <a @click="showModal(record)">审核</a>-->
+<!--                    <a-divider type="vertical" />-->
+<!--          <a @click="showDetails(record)">详情</a>-->
+<!--        </span>-->
 
       </a-table>
     </div>
@@ -375,18 +432,39 @@
   import { filterObj } from '@/utils/util';
   import moment from "moment";
   import pick from "lodash.pick";
+  import JDictSelectTag from '@/components/dict/JDictSelectTag'
+  import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
+
+  import {getAction, getFileAccessHttpUrl, httpAction} from "@api/manage";
+  import { duplicateCheck } from '@/api/api'
+
+
+  import PageLayout from '@/components/page/PageLayout'
+  import DetailList from '@/components/tools/DetailList'
+  const DetailListItem = DetailList.Item
 
   export default {
     name: 'HospitalmonitorList',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      HospitalmonitorModal
+      HospitalmonitorModal,
+      PageLayout,
+      DetailList,
+      DetailListItem
     },
     data () {
       return {
+        details:{
+
+        },
+        column:{
+        },
+        components: { JDictSelectTag },
+        detail:false,
+        hmid:"",
+        id:"",
+
         dateFlag: false,
-        labelCol: { span: 8 },
-        wrapperCol: { span: 14 },
         //批量操作记录选中id
         selectIds:[],
         selectObject:[],
@@ -528,18 +606,19 @@
             }
           },
           {
-            title:'备注',
-            align:"center",
+            title: '备注',
+            align: "center",
             dataIndex: 'hospitalmonitor.remark'
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            fixed:"right",
-            width:100,
-            scopedSlots: { customRender: 'action' }
           }
+          // },
+          // {
+          //   title: '操作',
+          //   dataIndex: 'action',
+          //   align:"center",
+          //   fixed:"right",
+          //   width:100,
+          //   scopedSlots: { customRender: 'action' }
+          // }
         ],
 
 
@@ -585,12 +664,14 @@
           {
             title:'医院名称',
             align:"center",
-            dataIndex: 'hospitalName'
+            dataIndex: 'hospitalName',
+            sorter: true
           },
           {
             title:'就诊科室',
             align:"center",
-            dataIndex: 'dictName'
+            dataIndex: 'dictName',
+            sorter: true
           },
           {
             title:'入院时间',
@@ -598,7 +679,7 @@
             dataIndex: 'indate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            },
           },
           {
             title:'住院编号',
@@ -645,15 +726,15 @@
                   return '未通过';
               }
             }
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            fixed:"right",
-            width:147,
-            scopedSlots: { customRender: 'action' }
           }
+          // {
+          //   title: '操作',
+          //   dataIndex: 'action',
+          //   align:"center",
+          //   fixed:"right",
+          //   width:147,
+          //   scopedSlots: { customRender: 'action' }
+          // }
         ],
         url: {
           list: "/hospital/monitor/list",
@@ -699,11 +780,11 @@
       })
 
     },
-    computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      },
-    },
+    // computed: {
+    //   importExcelUrl: function(){
+    //     return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+    //   },
+    // },
     methods: {
     getQueryParams(){
       //高级查询器
@@ -731,6 +812,7 @@
 
         this.dataSources = res.result.records;
         this.ipagination.total = res.result.total;
+         this.hmid=record.id;
        });
       this.visible = true;
     },
@@ -752,8 +834,14 @@
         this.visible = false;
       },
       //审核->审核->审核
-      setModal1Visible(modal1Visible) {
-        this.modal1Visible = modal1Visible;
+      setModal1Visible(recordid) {
+        this.column={};
+        if(recordid=='-1'){
+          this.modal1Visible = false;
+          return ;
+        }
+        this.id=recordid.id;
+        this.modal1Visible = true;
       },
       //批量抽查模态框
       setSpotCheckModalVisible(spotCheckModalVisible) {
@@ -769,30 +857,44 @@
         this.$message.warning(message);
       },
       //批量抽查
-      startSpotCheck(){
-
-        let data = {"hospitalmonitors":this.selectObject,"hmIds":this.selectIds,"checkStatus":this.spotCheckForm.checkStatus,"dateInterval":this.spotCheckForm.dateInterval,"dateStart":moment(this.spotCheckForm.dateStart).format('YYYY-MM-DD HH:mm:ss')};
-        console.log("测hi是测试ssssssssssssssssssssssssssssssssssssthis.columns.status"+this.selectionRows);
+      startSpotCheck(e){
+        // 触发表单验证
+        if(!this.spotCheckForm.dateInterval){
+          this.warning("抽查时间间隔不可为空！");
+          return ;
+        }
+        if(this.spotCheckForm.checkStatus==0 && (this.spotCheckForm.dateStart==null || this.spotCheckForm.dateStart=='' || !this.spotCheckForm.dateStart )) {
+          this.warning("抽查开始日期不可为空！");
+          return ;
+        }
+        let data =
+   {"hospitalmonitors":this.selectObject,"hmIds":this.selectIds,"checkStatus":this.spotCheckForm.checkStatus,"dateInterval":this.spotCheckForm.dateInterval,"dateStart":moment(this.spotCheckForm.dateStart).format('YYYY-MM-DD HH:mm:ss')};
         this.axios.post("/hospital/spotCheckTask/check",data).then(res=>{
           console.log(res);
+          var params = this.getQueryParams();//查询条件
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.records;
+              this.ipagination.total = res.result.total;
+            }
+          })
         })
 
         this.spotCheckModalVisible = false;
 
       },
-      //抽查校验
-      handleSubmit (e) {
-        e.preventDefault()
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            this.$notification['error']({
-              message: 'Received values of form:',
-              description: values
-            })
-          }
+      // 审核
+      review(){
+        if(!this.column.gpscheckstatus && !this.column.monitorstatus && !this.column.hospstatus && !this.column.remark){
+          this.warning("参数全部为空！");
+          return ;
+        }
+        let data =   {"hmid":this.hmid,"id":this.id,"gpscheckstatus":this.column.gpscheckstatus,"monitorstatus":this.column.monitorstatus,"hospstatus":this.column.hospstatus,"remark":this.column.remark};
+        this.axios.post("/monitors/update",data).then(res=>{
+          console.log(res);
         })
+        this.modal1Visible = false;
       },
-
       handleSpotCheck(id,selectObject) {
         this.selectIds =id;
         if(this.selectIds==''){
@@ -805,8 +907,31 @@
       showDateFlag(){
         this.dateFlag=true;
       },
+
+      showDetail(flag){
+        axios.get("/hospital/monitor/detail?id="+this.hmid).then((res)=>{
+          this.details = res;
+        });
+        this.detail=flag;
+      },
+      showDetails(record){
+        axios.get("/hospital/monitor/detail?id="+record.id).then((res)=>{
+          this.details = res;
+        });
+        this.detail=true;
+      },
       hiddenDateFlag(){
         this.dateFlag=false;
+      },
+      reloadPagination(e){
+
+        axios.get(this.url.list+"?startIndex=0&pageSize=10").then((res)=>{
+          console.log(res);
+
+          this.dataSources = res.result.records;
+          this.ipagination.total = res.result.total;
+        });
+        console.log("ssssssssssssssssssssss");
       },
     },
     // 按照条件置灰勾选框
@@ -821,12 +946,19 @@
           getCheckboxProps: record => ({
             props: {
               //01:住院登记 02:行为认证 03:出院 04:抽查
-              disabled: record.status=='1' && record.type == '01', // Column configuration not to be checked
+              disabled: record.outstatus!='1', // Column configuration not to be checked
             },
           }),
         };
       },
     },
+    validate (rule, value, callback) {
+      const regex = /^user-(.*)$/
+      if (!regex.test(value)) {
+        callback('需要以 user- 开头')
+      }advanced
+      callback()
+    }
 
   }
 </script>
@@ -834,3 +966,94 @@
   @import '~@assets/less/common.less';
 </style>
 
+<style lang="less" scoped>
+.page-header-wrapper-grid-content-main {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  transition: .3s;
+
+  .account-center-avatarHolder {
+    text-align: center;
+    margin-bottom: 24px;
+
+
+    .username {
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+  }
+
+  .account-center-detail {
+
+    p {
+      margin-bottom: 8px;
+      padding-left: 26px;
+      position: relative;
+    }
+
+    i {
+      position: absolute;
+      height: 14px;
+      width: 14px;
+      left: 0;
+      top: 4px;
+      background: url(https://gw.alipayobjects.com/zos/rmsportal/pBjWzVAHnOOtAUvZmZfy.svg)
+    }
+
+    .title {
+      background-position: 0 0;
+    }
+    .group {
+      background-position: 0 -22px;
+    }
+    .address {
+      background-position: 0 -44px;
+    }
+  }
+
+  .account-center-tags {
+    .ant-tag {
+      margin-bottom: 8px;
+    }
+  }
+
+  .account-center-team {
+
+    .members {
+      a {
+        display: block;
+        margin: 12px 0;
+        line-height: 24px;
+        height: 24px;
+        .member {
+          font-size: 14px;
+          color: rgba(0, 0, 0, .65);
+          line-height: 24px;
+          max-width: 100px;
+          vertical-align: top;
+          margin-left: 12px;
+          transition: all 0.3s;
+          display: inline-block;
+        }
+        &:hover {
+          span {
+            color: #1890ff;
+          }
+        }
+      }
+    }
+  }
+
+  .tagsTitle, .teamTitle {
+    font-weight: 500;
+    color: rgba(0,0,0,.85);
+    margin-bottom: 12px;
+  }
+
+}
+
+</style>

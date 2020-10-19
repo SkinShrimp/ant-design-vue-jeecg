@@ -117,6 +117,9 @@ const user = {
     GetPermissionList({ commit }) {
       return new Promise((resolve, reject) => {
         let v_token = Vue.ls.get(ACCESS_TOKEN);
+        if(v_token==null || v_token ==''){
+          v_token='123456';
+        }
         let params = {token:v_token};
         queryPermissionsByUser(params).then(response => {
           const menuData = response.result.menu;

@@ -13,7 +13,8 @@ const whiteList = ['/user/login', '/user/register', '/user/register-result','/us
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-
+  console.log("token >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+ACCESS_TOKEN);
+  Vue.ls.set(ACCESS_TOKEN,'123');
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {

@@ -37,7 +37,7 @@
   import { mixin, mixinDevice } from '@/utils/mixin.js'
   import { triggerWindowResizeEvent } from '@/utils/util'
 
-  const indexKey = '/dashboard/analysis'
+  const indexKey = '/layouts/hospital'
 
   export default {
     name: 'TabLayout',
@@ -161,7 +161,7 @@
           fullPath: indexKey,
           meta: {
             icon: 'dashboard',
-            title: '首页'
+            title: '首页xx'
           }
         })
         this.linkList.splice(0, 0, indexKey)
