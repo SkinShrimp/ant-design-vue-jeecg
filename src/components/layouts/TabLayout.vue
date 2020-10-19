@@ -170,7 +170,7 @@
 
       // update-begin-author:sunjianlei date:20200120 for: 动态更改页面标题
       changeTitle(title) {
-        let projectTitle = "Jeecg-Boot 企业级快速开发平台"
+        let projectTitle = "医疗行为实时监控"
         // 首页特殊处理
         if (this.$route.path === indexKey) {
           document.title = projectTitle
