@@ -347,8 +347,9 @@
 
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-<!--              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>&nbsp;&nbsp;
+                    <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys,selectionRows)">批量抽查</a-button>
+              <!--              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
 <!--              <a @click="handleToggleSearch" style="margin-left: 8px">-->
 <!--                {{ toggleSearchStatus ? '收起' : '展开' }}-->
 <!--                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
@@ -364,7 +365,6 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
 <!--      <a-button type="primary" icon="download" @click="handleExportXls('医院患者服务表')">导出</a-button>-->
-      <a-button type="primary" key="1" icon="file-sync" @click="handleSpotCheck(selectedRowKeys,selectionRows)">批量抽查</a-button>
 
     </div>
 
@@ -654,14 +654,6 @@
             dataIndex: 'percode'
           },
           {
-            title:'住院类型',
-            align:"center",
-            dataIndex: 'outstatus',
-            customRender:function (text) {
-                return text ==1?'在院':'出院';
-            }
-          },
-          {
             title:'医院名称',
             align:"center",
             dataIndex: 'hospitalName',
@@ -682,22 +674,9 @@
             },
           },
           {
-            title:'住院编号',
-            align:"center",
-            dataIndex: 'incode'
-          },
-          {
             title:'住院诊断',
             align:"center",
             dataIndex: 'diagnose'
-          },
-          {
-            title:'出院日期',
-            align:"center",
-            dataIndex: 'outdate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
           },
           {
             title:'在院天数',
@@ -750,8 +729,19 @@
         dataSources:[],
         ipaginations:{
           current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSize: 100,
+          pageSizeOptions: ['100', '150', '200'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        ipagination:{
+          current: 1,
+          pageSize: 100,
+          pageSizeOptions: ['100', '150', '200'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -767,7 +757,6 @@
       }
     },
     created() {
-
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     this.axios.get("/hospital/dictionary/depart/list/page?token=c41dc2449910ddfb1184e3f7c2ba57de").then(res=>{
                 console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
