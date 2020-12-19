@@ -195,7 +195,17 @@
         },
         dictOptions:[],
         dataSources:[],
-
+        ipagination:{
+          current: 1,
+          pageSize: 100,
+          pageSizeOptions: ['100', '150', '200'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
       }
     },
     created() {
