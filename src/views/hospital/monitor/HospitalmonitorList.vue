@@ -679,6 +679,11 @@
             dataIndex: 'diagnose'
           },
           {
+            title:'床位号',
+            align:"center",
+            dataIndex: 'wardcode',
+          },
+          {
             title:'在院天数',
             align:"center",
             dataIndex: 'lengthOfStay'

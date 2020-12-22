@@ -277,6 +277,11 @@
             dataIndex: 'numUpdateTime',
           },
           {
+            title:'床位号',
+            align:"center",
+            dataIndex: 'wardcode',
+          },
+          {
             title:'抽查次数',
             align:"center",
             dataIndex: 'checkNum'
