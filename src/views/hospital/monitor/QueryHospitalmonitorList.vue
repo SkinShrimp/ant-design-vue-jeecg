@@ -58,7 +58,7 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="住院时间">
-              <a-range-picker v-model="queryParam.indate"
+              <a-range-picker
                               format="YYYY-MM-DD"
                               :placeholder="['开始时间', '结束时间']"
                               @change="onInDateChange" />
@@ -66,7 +66,7 @@
           </a-col>
            <a-col :xl="6" :lg="7" :md="8" :sm="24">
                         <a-form-item label="抽查时间">
-                          <a-range-picker v-model="queryParam.spoCheckDate"
+                          <a-range-picker
                                           format="YYYY-MM-DD"
                                           :placeholder="['开始时间', '结束时间']"
                                           @change="spoCheckDateChange" />
