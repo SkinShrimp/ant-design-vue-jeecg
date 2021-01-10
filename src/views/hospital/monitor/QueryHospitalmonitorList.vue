@@ -28,6 +28,13 @@
             </a-form-item>
           </a-col>
 
+<!--          <a-col :md="6" :sm="8">-->
+<!--            <a-form-item label="字典搜索(同步)">-->
+<!--              <j-search-select-tag placeholder="请做出你的选择" v-model="queryParam.hospitalName"  :dictOptions="searchOptions">-->
+<!--              </j-search-select-tag>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+
           <a-col :md="6" :sm="8">
             <a-form-item label="就诊科室">
               <a-select placeholder="请选择就诊科室" v-model="queryParam.dept">
@@ -183,6 +190,7 @@
   import pick from "lodash.pick";
   import JDictSelectTag from '@/components/dict/JDictSelectTag'
   import {initDictOptions, filterDictText} from '@/components/dict/JDictSelectUtil'
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
 
   import {getAction, getFileAccessHttpUrl, httpAction} from "@api/manage";
   import { duplicateCheck } from '@/api/api'
@@ -198,7 +206,8 @@
     components: {
       PageLayout,
       DetailList,
-      DetailListItem
+      DetailListItem,
+      JSearchSelectTag
     },
     data () {
       return {
@@ -275,6 +284,9 @@
             title:'抽查时间',
             align:"center",
             dataIndex: 'numUpdateTime',
+            customRender: function(text){
+              return <span style="white-space: pre-line;">{text}</span>
+            }
           },
           {
             title:'床位号',
@@ -328,22 +340,21 @@
           showSizeChanger: true,
           total: 0
         },
+        searchOptions:[],
+
 
       }
     },
     created() {
 
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    this.axios.get("/hospital/dictionary/depart/list/page?token=c41dc2449910ddfb1184e3f7c2ba57de").then(res=>{
-                console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            console.log(res);
-    })
-
     this.url.list="/hospital/spotCheckTask/list"
       this.axios.get(this.url.dictList).then(res=>{
             this.dictOptions = res.result;
       })
-
+      //医院名称查询  用于模糊查询
+      // this.axios.get("/hospital/hisinfo/hospital/list").then(res=>{
+      //   this.searchOptions = res.result;
+      // })
     },
     methods: {
       getQueryParams() {
