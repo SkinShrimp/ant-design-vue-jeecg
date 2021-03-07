@@ -16,8 +16,8 @@ let apiBaseUrl = window._CONFIG['domianURL'] || "/jeecg-boot";
 // 创建 axios 实例
 const service = axios.create({
   //baseURL: '/jeecg-boot',
-  // baseURL: apiBaseUrl, // api base_url
-  baseURL: '', // api base_url
+  baseURL: apiBaseUrl, // api base_url
+  // baseURL: '', // api base_url
   timeout: 9000 // 请求超时时间
 })
 
@@ -63,6 +63,9 @@ const err = (error) => {
         break
       case 404:
           notification.error({ message: '系统提示', description:'很抱歉，资源未找到!',duration: 4})
+        break
+      case 501:
+        notification.error({ message: '系统提示', description: '网络超时'})
         break
       case 504:
         notification.error({ message: '系统提示', description: '网络超时'})

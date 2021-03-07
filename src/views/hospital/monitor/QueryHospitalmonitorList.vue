@@ -21,7 +21,16 @@
 <!--                <a-input placeholder="请输入患者姓名查询" v-model="queryParam.name"></a-input>-->
 <!--            </a-form-item>-->
 <!--          </a-col>-->
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="登录用户名称">
+              <a-input placeholder="请输入登录用户名称查询" v-model="queryParam.username"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="登录用户密码">
+              <a-input placeholder="请输入登录用户密码查询" v-model="queryParam.password" type="password"></a-input>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="医院名称">
               <a-input placeholder="请输入医院名称查询" v-model="queryParam.hospitalName"></a-input>
@@ -193,7 +202,7 @@
   import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
 
   import {getAction, getFileAccessHttpUrl, httpAction} from "@api/manage";
-  import { duplicateCheck } from '@/api/api'
+  import {duplicateCheck, queryPermissionRule} from '@/api/api'
 
 
   import PageLayout from '@/components/page/PageLayout'

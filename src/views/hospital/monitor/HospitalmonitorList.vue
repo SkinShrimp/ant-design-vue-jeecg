@@ -267,6 +267,17 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="12">
+            <a-form-item label="登录用户名称">
+              <a-input placeholder="请输入登录用户名称查询" v-model="queryParam.username"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="6" :sm="12">
+            <a-form-item label="登录用户密码">
+              <a-input placeholder="请输入登录用户密码查询" type="password" v-model="queryParam.password"></a-input>
+            </a-form-item>
+          </a-col>
 
           <a-col :md="6" :sm="12">
             <a-form-item label="身份证号">
@@ -772,7 +783,6 @@
       this.axios.get(this.url.dictList).then(res=>{
             this.dictOptions = res.result;
       })
-
     },
     // computed: {
     //   importExcelUrl: function(){
